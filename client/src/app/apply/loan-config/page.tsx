@@ -48,12 +48,9 @@ export default function LoanConfigPage() {
 
     try {
       await api.post("/api/borrower/apply", { loanAmount, tenureInDays });
-      toast.success("Loan application submitted successfully");
+      toast.success("Loan applied successfully");
       setSuccess(true);
       await refresh({ silent: true });
-      setTimeout(() => {
-        router.push("/apply");
-      }, 1500);
     } catch (err) {
       const message = getApiErrorMessage(
         err,
@@ -64,6 +61,32 @@ export default function LoanConfigPage() {
       errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
       setLoading(false);
     }
+  }
+
+  if (success) {
+    return (
+      <div className="surface-card text-center animate-fade-in py-10 px-6 sm:py-14 sm:px-10">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-4 ring-emerald-100/50">
+          <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 className="mt-6 text-2xl font-bold tracking-tight text-slate-900">
+          Loan Applied Successfully!
+        </h2>
+        <p className="mt-3 mx-auto max-w-md text-sm leading-relaxed text-slate-500">
+          Your loan application for <span className="font-semibold text-slate-800">{formatINR(loanAmount)}</span> with a tenure of <span className="font-semibold text-slate-800">{tenureInDays} days</span> has been submitted successfully and is now in the review queue.
+        </p>
+        <div className="mt-8 flex justify-center">
+          <Link
+            href="/apply"
+            className="btn-primary px-8 py-3 shadow-md"
+          >
+            Go to Borrower Homepage
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -170,22 +193,13 @@ export default function LoanConfigPage() {
         </dl>
       </div>
 
-      {success && (
-        <div className="alert-success mt-6">
-          <p className="font-semibold text-emerald-800">Application submitted!</p>
-          <p className="mt-1 text-sm text-emerald-700">
-            Your loan application has been submitted successfully. Redirecting to home…
-          </p>
-        </div>
-      )}
-
       <button
         type="button"
         onClick={handleApply}
-        disabled={loading || success}
+        disabled={loading}
         className="btn-primary mt-8 w-full !py-3.5"
       >
-        {success ? "Submitted successfully! Redirecting…" : loading ? "Submitting…" : "Apply for loan"}
+        {loading ? "Submitting…" : "Apply for loan"}
       </button>
     </div>
   );
