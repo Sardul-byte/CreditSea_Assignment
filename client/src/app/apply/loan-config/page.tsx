@@ -30,6 +30,7 @@ export default function LoanConfigPage() {
   const [tenureInDays, setTenureInDays] = useState(180);
   const [loading, setLoading] = useState(false);
   const [applyError, setApplyError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const simpleInterest = useMemo(
     () => calculateSimpleInterest(loanAmount, tenureInDays),
@@ -47,9 +48,12 @@ export default function LoanConfigPage() {
 
     try {
       await api.post("/api/borrower/apply", { loanAmount, tenureInDays });
-      await refresh({ silent: true });
       toast.success("Loan application submitted successfully");
-      router.push("/apply");
+      setSuccess(true);
+      await refresh({ silent: true });
+      setTimeout(() => {
+        router.push("/apply");
+      }, 1500);
     } catch (err) {
       const message = getApiErrorMessage(
         err,
@@ -58,7 +62,6 @@ export default function LoanConfigPage() {
       setApplyError(message);
       toast.error(INELIGIBLE_HEADING);
       errorRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-    } finally {
       setLoading(false);
     }
   }
@@ -167,13 +170,22 @@ export default function LoanConfigPage() {
         </dl>
       </div>
 
+      {success && (
+        <div className="alert-success mt-6">
+          <p className="font-semibold text-emerald-800">Application submitted!</p>
+          <p className="mt-1 text-sm text-emerald-700">
+            Your loan application has been submitted successfully. Redirecting to home…
+          </p>
+        </div>
+      )}
+
       <button
         type="button"
         onClick={handleApply}
-        disabled={loading}
+        disabled={loading || success}
         className="btn-primary mt-8 w-full !py-3.5"
       >
-        {loading ? "Submitting…" : "Apply for loan"}
+        {success ? "Submitted successfully! Redirecting…" : loading ? "Submitting…" : "Apply for loan"}
       </button>
     </div>
   );
