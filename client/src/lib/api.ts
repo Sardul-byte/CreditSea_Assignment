@@ -26,8 +26,12 @@ api.interceptors.response.use(
     if (typeof window !== "undefined" && axios.isAxiosError(error)) {
       if (error.response?.status === 401) {
         removeToken();
-        window.location.href = "/login";
-        return Promise.reject(error);
+        const isLoginRequest = error.config?.url?.includes("/auth/login");
+        const isLoginPage = typeof window !== "undefined" && window.location.pathname === "/login";
+        if (!isLoginRequest && !isLoginPage) {
+          window.location.href = "/login";
+          return Promise.reject(error);
+        }
       }
 
       const skipToast = error.config?.headers?.["X-Skip-Toast"];

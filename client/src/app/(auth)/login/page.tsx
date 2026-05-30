@@ -6,6 +6,7 @@ import { AuthCard } from "@/components/auth/AuthCard";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
 import api from "@/lib/api";
+import { getApiErrorMessage } from "@/lib/errors";
 
 interface LoginResponse {
   token: string;
@@ -22,10 +23,12 @@ export default function LoginPage() {
   const toast = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fieldError, setFieldError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setFieldError(null);
     setLoading(true);
 
     try {
@@ -37,8 +40,8 @@ export default function LoginPage() {
       login(data.token);
       toast.success("Signed in successfully");
       router.push(getRedirectPath(data.user.role));
-    } catch {
-      // Error toast handled by axios interceptor
+    } catch (err) {
+      setFieldError(getApiErrorMessage(err, "Invalid email or password"));
     } finally {
       setLoading(false);
     }
@@ -55,6 +58,11 @@ export default function LoginPage() {
       }}
     >
       <form onSubmit={handleSubmit} className="space-y-5">
+        {fieldError && (
+          <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {fieldError}
+          </p>
+        )}
         <div>
           <label
             htmlFor="email"
