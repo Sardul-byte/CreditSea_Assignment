@@ -48,8 +48,8 @@ export default function LoanConfigPage() {
     try {
       await api.post("/api/borrower/apply", { loanAmount, tenureInDays });
       await refresh({ silent: true });
-      toast.success("Loan application submitted");
-      router.push("/apply/my-loans");
+      toast.success("Loan applied successfully");
+      router.push("/apply");
     } catch (err) {
       const message = getApiErrorMessage(
         err,
