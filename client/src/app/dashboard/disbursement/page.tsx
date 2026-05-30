@@ -63,7 +63,7 @@ export default function DisbursementDashboardPage() {
 
   return (
     <RoleGuard module="disbursement">
-      <div className="space-y-6">
+      <div className="animate-fade-in space-y-6">
         {loading ? (
           <>
             <PageHeaderSkeleton />

@@ -144,7 +144,7 @@ export default function CollectionDashboardPage() {
 
   return (
     <RoleGuard module="collection">
-      <div className="space-y-6">
+      <div className="animate-fade-in space-y-6">
         {loading ? (
           <>
             <PageHeaderSkeleton />

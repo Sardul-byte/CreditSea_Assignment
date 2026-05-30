@@ -95,7 +95,7 @@ export default function SanctionDashboardPage() {
 
   return (
     <RoleGuard module="sanction">
-      <div className="space-y-6">
+      <div className="animate-fade-in space-y-6">
         {loading ? (
           <>
             <PageHeaderSkeleton />
