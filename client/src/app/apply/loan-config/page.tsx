@@ -30,7 +30,6 @@ export default function LoanConfigPage() {
   const [tenureInDays, setTenureInDays] = useState(180);
   const [loading, setLoading] = useState(false);
   const [applyError, setApplyError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
 
   const simpleInterest = useMemo(
     () => calculateSimpleInterest(loanAmount, tenureInDays),
@@ -49,8 +48,7 @@ export default function LoanConfigPage() {
     try {
       await api.post("/api/borrower/apply", { loanAmount, tenureInDays });
       toast.success("Loan applied successfully");
-      setSuccess(true);
-      await refresh({ silent: true });
+      router.push("/apply/status");
     } catch (err) {
       const message = getApiErrorMessage(
         err,
@@ -175,32 +173,6 @@ export default function LoanConfigPage() {
       >
         {loading ? "Submitting…" : "Apply for loan"}
       </button>
-
-      {success && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm animate-fade-in">
-          <div className="w-full max-w-sm rounded-2xl border border-slate-100 bg-white p-6 text-center shadow-2xl">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 ring-4 ring-emerald-100/50">
-              <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 className="mt-5 text-lg font-bold text-slate-900">
-              Loan applied successfully
-            </h3>
-            <p className="mt-2 text-xs leading-relaxed text-slate-500">
-              Your application has been received and is currently under review.
-            </p>
-            <div className="mt-6">
-              <Link
-                href="/apply"
-                className="btn-primary w-full py-2.5 active:scale-[0.97]"
-              >
-                OK
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
